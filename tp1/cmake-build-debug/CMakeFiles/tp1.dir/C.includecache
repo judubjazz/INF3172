@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/ju/Projects/CLionProjects/inf3172/tp1/TP1.c
+stdlib.h
+-
+unistd.h
+-
+stdio.h
+-
+sys/wait.h
+-
+string.h
+-
+errno.h
+-
+pthread.h
+-
+
