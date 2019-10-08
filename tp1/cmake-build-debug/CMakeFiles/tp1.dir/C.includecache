@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/ju/Projects/CLionProjects/inf3172/tp1/TP1.c
+/home/ju/Projects/CLionProjects/INF3172/tp1/TP1.c
 stdlib.h
 -
 unistd.h
@@ -20,5 +20,17 @@ string.h
 errno.h
 -
 pthread.h
+-
+utils.c
+/home/ju/Projects/CLionProjects/INF3172/tp1/utils.c
+
+/home/ju/Projects/CLionProjects/INF3172/tp1/utils.c
+stdio.h
+-
+stdlib.h
+-
+string.h
+-
+ctype.h
 -
 

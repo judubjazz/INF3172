@@ -1,0 +1,1 @@
+/usr/bin/cc   -rdynamic CMakeFiles/test_unpack.dir/test/suites/api/test_unpack.c.o  -o bin/test_unpack lib/libjansson.a 

@@ -1,0 +1,22 @@
+{
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "gcc build active file",
+            "command": "gcc",
+            "args": [
+                "-pthread",
+                "-lpthread",
+                "-std=c99",
+                "-g",
+                "/home/ju/Projects/CLionProjects/INF3172/tp1/TP1.c",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}"
+            ],
+            "options": {
+                "cwd": "/usr/bin"
+            }
+        }
+    ],
+    "version": "2.0.0"
+}
