@@ -11,6 +11,3 @@ tp1: TP1.c
 
 clean:
 	rm -f TP1
-
-
-

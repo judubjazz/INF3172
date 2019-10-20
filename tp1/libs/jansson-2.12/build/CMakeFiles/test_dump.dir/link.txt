@@ -1,1 +1,0 @@
-/usr/bin/cc   -rdynamic CMakeFiles/test_dump.dir/test/suites/api/test_dump.c.o  -o bin/test_dump lib/libjansson.a 

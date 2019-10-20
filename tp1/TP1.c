@@ -10,14 +10,18 @@
 
 
 #define MAX_SIZE 256
-#define MSG_OK       "Bravo! Votre Sudoku est valide!\n"
-#define ERR_SIZE     "La taille de la grille de Sudoku devrait être 9x9.\n"
-#define ERR_IS_DIGIT "La case (%d,%d) contient un caractère non-entier.\n"
+#define USAGE          "Le fichier test doit se nommer test.txt et se trouver à la raciner du projet."
+#define MSG_OK         "Bravo! Votre Sudoku est valide!\n"
+#define ERR_SIZE       "La taille de la grille de Sudoku devrait être 9x9.\n"
+#define ERR_DIGIT      "La case (%d,%d) contient un caractère non-entier.\n"
 #define ERR_SPEC_CHAR  "La case (%d,%d) contient un caractère spécial non admis.\n"
-#define ERR_DBL      "Il y a un doublon %d dans la grille 9 x 9.\n"
-#define ERR_DBL2     "Il y a un doublon %d dans une sous-grilles 3 x 3\n"
+#define ERR_DBL        "Il y a un doublon %d dans la grille 9 x 9.\n"
+#define ERR_DBL2       "Il y a un doublon %d dans une sous-grilles 3 x 3 numéro %d.\n"
+#define CHECK_ROW      0
+#define CHECK_COL      1
+#define CHECK_BOX      2
 #define ERRNO_SIZE     0
-#define ERRNO_IS_DIGIT 1
+#define ERRNO_DIGIT    1
 #define ERRNO_CHAR     2
 #define ERRNO_DBL      3
 #define ERRNO_DBL2     4
@@ -27,24 +31,22 @@
                do { perror(msg); exit(EXIT_FAILURE); } while (0)
 
 
-
-/* Used as argument to thread_start() */
 struct thread {
     pthread_t   thread_id;        /* ID returned by pthread_create() */
     int         thread_num;       /* Application-defined thread # */
     char        **matrix;
-    struct data **data;
+    struct data *data;
+    int         nb_sudoku;
 };
 
 struct data {
     bool ok;
-    char *msg;
     char _errno;
     int  row;
     int  col;
+    int  box;
+    char doublon;
 };
-
-
 
 
 // threads functions
@@ -53,8 +55,8 @@ static void *eval_cols(void *param);
 static void *eval_box(void *param);
 
 void check_args(int argc, char *argv[], char *cwd){
-    if (argc != 2)         handle_error("usage: a.out <integer value>\n");
-    if (atoi(argv[1]) < 0) handle_error("Argument %d must be >= 0 \n");
+    if (argc > 1)         handle_error("le fichier test doit se nommer test.txt et se trouver à la racine du projet \n");
+    // if (atoi(argv[0]) < 0) handle_error("Argument %d must be >= 0 \n");
     if (cwd == NULL)       handle_error("getcwd()");
 }
 
@@ -65,17 +67,36 @@ int case_of(int i){
     return -1;
 }
 
-char ** create_matrix(const char * filename) {
+
+char ** create_matrix(const char * filename, int * offset, bool * eof) {
     char ** matrix = calloc(MAX_SIZE, sizeof(char));
     char line [MAX_SIZE];
     FILE* file = fopen(filename, "r");
     int i = 0;
-    while (fgets(line, sizeof(line), file)) {
+    int nb_line = 0;
+
+    // read offset lines
+    for(int off = 0; off < *offset; ++off){
+        fgets(line, sizeof(line), file);
+    }
+    while (true) {
+        char * c = fgets(line, sizeof(line), file);
+        if(c == NULL){
+            *eof = true;
+            break;
+        } 
+            
+        if(line[0] == '\n'){
+          *offset += nb_line + 1;
+          break;  
+        } 
+
         remove_spaces(line);
         trim(line);
         matrix[i] = malloc(strlen(line) * sizeof(char));
         strcpy(matrix[i], line);
         ++i;
+        ++nb_line;
     }
     fclose(file);
     return matrix;
@@ -87,97 +108,69 @@ void free_matrix(char ** matrix){
     free(matrix);
 }
 
-
-int main(int argc, char *argv[]){
-    char cwd[MAX_SIZE];
-    getcwd(cwd, sizeof(cwd)); 
-    check_args(argc, argv, cwd);
-
-    struct thread *t;
-    pthread_t tid;                                                                               // the thread identifier */
-    pthread_attr_t attr;
-
-    int status;
-    int tnum;
-    int box_index = 0;
-    int num_threads = 11;  // set of attributes for the thread */
-    void *res;
-    
-    // TODO put test.txt in root project folder                                                                 
-    char const* const filename = strcat(cwd, "/test/mytest.txt");
-
-    char ** matrix = create_matrix(filename);
-
-    // Initialize thread creation attributes
-    status = pthread_attr_init(&attr);
-    if (status != 0) handle_error_en(status, "pthread_attr_init");
-
-    // Allocate memory for pthread_create() arguments
-    t = calloc(num_threads, sizeof(struct thread));
-    if (t == NULL) handle_error("calloc");
-    size_t test = sizeof(struct data*);
-    size_t test1 = sizeof(int);
-    // t->data = malloc(sizeof(struct data*));
-        // t->data = calloc(num_threads, sizeof(int));
-
-    // Create one thread for each 11 sudoku evaluations
-    for (tnum = 0; tnum < num_threads; tnum++) {
-        t[tnum].thread_num = tnum;
-        t[tnum].matrix = matrix;
-        // main thread info
-        t[tnum].data = calloc(11, sizeof(struct data*));
-        t[tnum].data[tnum] = malloc(sizeof(struct data));
-        t[tnum].data[tnum]->ok = true;
-        t[tnum].data[tnum]->msg = MSG_OK;
-
-        // 3 actions possible for a thread
-        switch(case_of(tnum)) {
-            case 0: pthread_create(&t[tnum].thread_id, &attr, &eval_rows, &t[tnum]);
-                    break;
-            case 1: pthread_create(&t[tnum].thread_id, &attr, &eval_cols, &t[tnum]);
-                    break;
-            case 2: t[tnum].data[tnum]->row = box_index;
-                    pthread_create(&t[tnum].thread_id, &attr, &eval_box, &t[tnum]);
-                    box_index += 1;
-                    break;
-            default: handle_error_en(tnum, "switch thread create");
+/**
+ * 
+ */
+int contains_doublon(const char * s, int * ret){
+    int flags [] = {0,0,0,0,0,0,0,0,0,0};
+    for (int i = 0; i<9; ++i) {
+        int n = s[i] - '0';
+        if(flags[n]==1){
+            *ret = n;
+            return true;
+        } else{
+            flags[n] = 1;
         }
     }
-
-    // Destroy the thread attributes object, since it is no longer needed
-    status = pthread_attr_destroy(&attr);
-    if (status != 0) handle_error_en(status, "pthread_attr_destroy");
-
-    // Join each thread, and display its returned value
-    for (tnum = 0; tnum < num_threads; tnum++) {
-        status = pthread_join(t[tnum].thread_id, NULL);
-        if (status != 0) handle_error_en(status, "pthread_join");
-        // free(res);
-    }
-
-    if (t->data[tnum]->ok){
-        printf(MSG_OK);
-    } else {
-    // 5 possible errors
-    switch(t->data[tnum]->_errno){
-        case ERRNO_SIZE: printf(t->data[tnum]->msg);
-            break;
-        case ERRNO_IS_DIGIT: printf(t->data[tnum]->msg, t->data[tnum]->row, t->data[tnum]->col);
-            break;
-        case ERRNO_CHAR: printf(t->data[tnum]->msg);
-            break;
-        case ERRNO_DBL: printf(t->data[tnum]->msg);
-            break;
-        case ERRNO_DBL2: printf(t->data[tnum]->msg);
-            break;
-        default:handle_error("switch pthread join");
-    }
+    return false;
 }
 
-    // free assigned memory to thread info
-    free(t);
-    free_matrix(matrix);
-    return 0;
+void validate(struct thread **t, char *s, int i, int j){
+    char *c = malloc (sizeof(char));
+    int pos = 0;
+    if (!only_digits_in(s, c, &pos)) {
+        if(isalpha(*c))(*t)->data->_errno = ERRNO_DIGIT;
+        else (*t)->data->_errno = ERRNO_CHAR;
+        (*t)->data->ok      = false;
+        
+        switch (case_of((*t)->thread_num)){
+            case CHECK_ROW:
+                (*t)->data->row     = i;
+                (*t)->data->col     = pos;
+                break;
+            case CHECK_COL:
+                (*t)->data->row     = pos;
+                (*t)->data->col     = j;
+                break;
+            case CHECK_BOX:
+                if(pos <3){
+                    j += pos;  
+                } else if(pos < 6){
+                    i +=1;
+                    j += (pos-3);
+                } else {
+                    i +=2;
+                    j += (pos-6);
+                }
+                (*t)->data->row     = i;
+                (*t)->data->col     = j;
+                break;    
+            default: handle_error("validate");
+        }
+
+    } else if (strlen(s) != 9){
+        (*t)->data->ok      = false;
+        (*t)->data->_errno  = ERRNO_SIZE;
+        (*t)->data->row     = i;
+        (*t)->data->col     = j;
+    } else if(contains_doublon(s, c)){
+        (*t)->data->ok      = false;
+        (*t)->data->_errno  = ERRNO_DBL;
+        (*t)->data->row     = i;
+        (*t)->data->col     = j;
+        (*t)->data->doublon = *c;
+    }
+    free(c);
 }
 
 /**
@@ -188,26 +181,13 @@ int main(int argc, char *argv[]){
 static void *eval_rows(void *params){
     struct thread *t = params;
     char s[MAX_SIZE];
-    int i,j = 0;
+    int i = 0;
+    int j = 0;
 
     while (t->matrix[i] != NULL){
         strcpy(s,t->matrix[i]);
         trim(s);
-        if (!not_digits_at_index(s,&j)) {
-            t->data[t->thread_num]->ok   = false;
-            t->data[t->thread_num]->msg  = ERR_IS_DIGIT;
-            t->data[t->thread_num]->_errno = ERRNO_IS_DIGIT;
-            t->data[t->thread_num]->row = i;
-            t->data[t->thread_num]->col = j;
-            break;
-        } else if (strlen(s) != 9){
-            t->data[t->thread_num]->ok   = false;
-            t->data[t->thread_num]->msg  = ERR_SIZE;
-            t->data[t->thread_num]->_errno = ERRNO_SIZE;
-            t->data[t->thread_num]->row = i+1;
-            t->data[t->thread_num]->col = i;
-            break;
-        }
+        validate(&t, s, i, j);
         ++i;
     }
     pthread_exit(0);
@@ -220,7 +200,8 @@ static void *eval_rows(void *params){
  */
 static void *eval_cols(void *params){
     struct thread *t = params;
-    int i,j = 0;
+    int i = 0;
+    int j = 0;
     char s[MAX_SIZE];
 
     while (t->matrix[0][j] != 0){
@@ -229,21 +210,7 @@ static void *eval_cols(void *params){
             s[i] = c;
             ++i;
         }
-        if (!only_digits_in(s)) {
-            t->data[t->thread_num]->ok   = false;
-            t->data[t->thread_num]->msg  = ERR_SPEC_CHAR;
-            t->data[t->thread_num]->_errno = ERRNO_CHAR;
-            t->data[t->thread_num]->row = j;
-            t->data[t->thread_num]->col = i;
-            break;
-        } else if (strlen(s) != 9){
-            t->data[t->thread_num]->ok   = false;
-            t->data[t->thread_num]->msg  = ERR_SPEC_CHAR;
-            t->data[t->thread_num]->_errno = ERRNO_CHAR;
-            t->data[t->thread_num]->row = j;
-            t->data[t->thread_num]->col = i;
-            break;
-        }
+        validate(&t, s, i, j);
         i = 0;
         ++j;
     }
@@ -257,28 +224,19 @@ static void *eval_cols(void *params){
  */
 static void *eval_box(void *params){
     struct thread *t = params;
-    int index, u, v = 0;
-    set_box_index(t->data[t->thread_num]->row, &u,&v);
+    int u,v;
+    set_box_index(t->data->box, &u,&v);
     char s[MAX_SIZE];
 
-    for (int i = 0; i<2; ++i){
-        for (int j = 0; j < 2; ++j){
-            s[i] = t->matrix[u+i][v+i];
+    int k = 0;
+    for (int i = 0; i<3; ++i){
+        for (int j = 0; j<3; ++j){
+            s[k] = t->matrix[u+i][v+j];
+            ++k;
         }
     }
-    if (!only_digits_in(s)) {
-        t->data[t->thread_num]->ok   = false;
-        t->data[t->thread_num]->msg  = "allo ca va";
-        t->data[t->thread_num]->_errno = ERRNO_CHAR;
-        t->data[t->thread_num]->row = 0;
-        t->data[t->thread_num]->col = 0;    
-    } else if (strlen(s) != 9){
-        t->data[t->thread_num]->ok   = false;
-        t->data[t->thread_num]->msg  = ERR_SPEC_CHAR;
-        t->data[t->thread_num]->_errno = ERRNO_CHAR;
-        t->data[t->thread_num]->row = 0;
-        t->data[t->thread_num]->col = 0;
-    }
+    validate(&t, s, u, v);
+    if(t->data->_errno == ERRNO_DBL) t->data->_errno = ERRNO_DBL2;
     pthread_exit(0);
 }
 
@@ -288,27 +246,28 @@ static void *eval_box(void *params){
  */
 void set_box_index(int box, int *i, int *j) {
     switch(box){
-        case 0: *i = *j = 0;
-                break;
-        case 1: *i = 3; 
+        case 0: *i = 0;
                 *j = 0;
                 break;
-        case 2: *i = 6; 
+        case 3: *i = 3; 
                 *j = 0;
                 break;
-        case 3: *i = 0; 
+        case 6: *i = 6; 
+                *j = 0;
+                break;
+        case 1: *i = 0; 
                 *j = 3;
                 break;
         case 4: *i = 3; 
                 *j = 3;
                 break;
-        case 5: *i = 6; 
+        case 7: *i = 6; 
                 *j = 3;
                 break;
-        case 6: *i = 0; 
+        case 2: *i = 0; 
                 *j = 6;
                 break;
-        case 7: *i = 3; 
+        case 5: *i = 3; 
                 *j = 6;
                 break;
         case 8: *i = 6; 
@@ -318,4 +277,95 @@ void set_box_index(int box, int *i, int *j) {
     }
 }
 
+
+int main(int argc, char *argv[]){
+    char cwd[MAX_SIZE];
+    getcwd(cwd, sizeof(cwd)); 
+    check_args(argc, argv, cwd);
+
+    struct thread *t;
+    pthread_t tid;
+    pthread_attr_t attr;
+    int status, tnum, box_index, offset = 0;
+    int num_threads = 11;  
+    bool eof = false;
+    int nb_sudoku = 1;
+    
+    // TODO put test.txt in root project folder                                                                 
+    char const* const filename = strcat(cwd, "/test/test.txt");
+
+    while(true){
+        char ** matrix = create_matrix(filename, &offset, &eof);
+        if(eof) break; 
+        printf("\nevaluation du sudoku # %d \n\n", nb_sudoku);
+
+        // Initialize thread creation attributes
+        status = pthread_attr_init(&attr);
+        if (status != 0) handle_error_en(status, "pthread_attr_init");
+
+        // Allocate memory for pthread_create() arguments
+        t = calloc(num_threads, sizeof(struct thread));
+        if (t == NULL) handle_error("calloc");
+
+        // Create one thread for each 11 sudoku evaluations
+        for (tnum = 0; tnum < num_threads; tnum++) {
+            t[tnum].thread_num = tnum;
+            t[tnum].matrix = matrix;
+            t[tnum].nb_sudoku = nb_sudoku;
+            t[tnum].data = malloc(sizeof(struct data));
+            t[tnum].data->ok = true;
+
+            // 3 actions possible for a thread
+            switch(case_of(tnum)) {
+                case CHECK_ROW: pthread_create(&t[tnum].thread_id, &attr, &eval_rows, &t[tnum]);
+                                break;
+                case CHECK_COL: pthread_create(&t[tnum].thread_id, &attr, &eval_cols, &t[tnum]);
+                                break;
+                case CHECK_BOX: t[tnum].data->box = box_index;
+                                pthread_create(&t[tnum].thread_id, &attr, &eval_box, &t[tnum]);
+                                box_index += 1;
+                                // reset box_index for next sudoku
+                                if(box_index == 9)box_index = 0;
+                                break;
+                default: handle_error_en(tnum, "switch thread create");
+            }
+        }
+
+        // Destroy the thread attributes object, since it is no longer needed
+        status = pthread_attr_destroy(&attr);
+        if (status != 0) handle_error_en(status, "pthread_attr_destroy");
+
+        // Join each thread, and display its returned value
+        for (tnum = 0; tnum < num_threads; tnum++) {
+            status = pthread_join(t[tnum].thread_id, NULL);
+            if (status != 0) handle_error_en(status, "pthread_join");
+        
+            if (t[tnum].data->ok){
+                printf(MSG_OK);
+            } else {
+                // 5 possible errors
+                switch(t[tnum].data->_errno){
+                    case ERRNO_SIZE:  printf(ERR_SIZE);
+                        break;
+                    case ERRNO_DIGIT: printf(ERR_DIGIT, t[tnum].data->row, t[tnum].data->col);
+                        break;
+                    case ERRNO_CHAR:  printf(ERR_SPEC_CHAR, t[tnum].data->row, t[tnum].data->col);
+                        break;
+                    case ERRNO_DBL:   printf(ERR_DBL, t[tnum].data->doublon);
+                        break;
+                    case ERRNO_DBL2:  printf(ERR_DBL2, t[tnum].data->doublon, t[tnum].data->box);
+                        break;
+                    default:handle_error("switch pthread join");
+                }
+            }
+            free(t[tnum].data);
+        }
+
+        // free assigned memory to thread info
+        free_matrix(matrix);
+        free(t);
+        ++nb_sudoku;
+    }
+    return 0;
+}
 

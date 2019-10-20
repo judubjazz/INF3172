@@ -137,9 +137,11 @@ void remove_spaces(char* s) {
 }
 
 
-int only_digits_in(char *s){
-    for (int i = 0; i < strlen(s)-1; ++i){
+int only_digits_in(char *s, char * c, int * pos){
+    for (int i = 0; i < strlen(s); ++i){
         if (s[i] < '0' || s[i] > '9'){
+            *c = s[i];
+            *pos = i;
             return 0;
         }
     }

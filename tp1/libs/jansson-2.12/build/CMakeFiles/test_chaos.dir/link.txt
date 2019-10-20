@@ -1,1 +1,0 @@
-/usr/bin/cc   -rdynamic CMakeFiles/test_chaos.dir/test/suites/api/test_chaos.c.o  -o bin/test_chaos lib/libjansson.a 
