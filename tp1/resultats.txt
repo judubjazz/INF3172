@@ -1,0 +1,56 @@
+
+Évaluation du sudoku # 1 
+
+La case (5,5) contient un caractère spécial non admis.
+La case (5,5) contient un caractère spécial non admis.
+Il y a un doublon 5 dans une sous-grilles 3 x 3 numéro 3.
+La case (5,5) contient un caractère spécial non admis.
+Il y a un doublon 2 dans une sous-grilles 3 x 3 numéro 5.
+Il y a un doublon 8 dans une sous-grilles 3 x 3 numéro 6.
+Il y a un doublon 2 dans une sous-grilles 3 x 3 numéro 7.
+Il y a un doublon 5 dans une sous-grilles 3 x 3 numéro 8.
+Il y a un doublon 2 dans une sous-grilles 3 x 3 numéro 0.
+Il y a un doublon 5 dans une sous-grilles 3 x 3 numéro 1.
+Il y a un doublon 8 dans une sous-grilles 3 x 3 numéro 2.
+
+Évaluation du sudoku # 2 
+
+Bravo! Votre Sudoku est valide!
+Bravo! Votre Sudoku est valide!
+Bravo! Votre Sudoku est valide!
+Bravo! Votre Sudoku est valide!
+Bravo! Votre Sudoku est valide!
+Bravo! Votre Sudoku est valide!
+Bravo! Votre Sudoku est valide!
+Bravo! Votre Sudoku est valide!
+Bravo! Votre Sudoku est valide!
+Bravo! Votre Sudoku est valide!
+Bravo! Votre Sudoku est valide!
+
+Évaluation du sudoku # 3 
+
+La case (7,6) contient un caractère spécial non admis.
+La case (7,6) contient un caractère spécial non admis.
+Il y a un doublon 5 dans une sous-grilles 3 x 3 numéro 3.
+La case (3,3) contient un caractère spécial non admis.
+Il y a un doublon 2 dans une sous-grilles 3 x 3 numéro 5.
+Il y a un doublon 8 dans une sous-grilles 3 x 3 numéro 6.
+Il y a un doublon 2 dans une sous-grilles 3 x 3 numéro 7.
+La case (7,6) contient un caractère spécial non admis.
+Il y a un doublon 2 dans une sous-grilles 3 x 3 numéro 0.
+Il y a un doublon 5 dans une sous-grilles 3 x 3 numéro 1.
+Il y a un doublon 8 dans une sous-grilles 3 x 3 numéro 2.
+
+Évaluation du sudoku # 4 
+
+Il y a un doublon 9 dans la grille 9 x 9.
+Il y a un doublon 7 dans la grille 9 x 9.
+Il y a un doublon 5 dans une sous-grilles 3 x 3 numéro 3.
+Il y a un doublon 8 dans une sous-grilles 3 x 3 numéro 4.
+Il y a un doublon 2 dans une sous-grilles 3 x 3 numéro 5.
+Il y a un doublon 8 dans une sous-grilles 3 x 3 numéro 6.
+Il y a un doublon 2 dans une sous-grilles 3 x 3 numéro 7.
+Il y a un doublon 6 dans une sous-grilles 3 x 3 numéro 8.
+Il y a un doublon 2 dans une sous-grilles 3 x 3 numéro 0.
+Il y a un doublon 5 dans une sous-grilles 3 x 3 numéro 1.
+La taille de la grille de Sudoku devrait être 9x9.

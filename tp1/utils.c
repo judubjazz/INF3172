@@ -3,10 +3,15 @@
 #include<string.h>
 #include <ctype.h>
 
+#define handle_error_en(en, msg) \
+               do { errno = en; perror(msg); exit(EXIT_FAILURE); } while (0)
+#define handle_error(msg) \
+               do { perror(msg); exit(EXIT_FAILURE); } while (0)
+
 /**
- *
+ * read a file
  * @param filename
- * @return
+ * @return a char buffer
  */
 char *read_file(char *filename) {
     char *buffer = NULL;
@@ -87,7 +92,7 @@ char *read_file(char *filename) {
 //}
 //
 ///**
-// *
+// * trim fonction if you cannot modify the string
 // * @param str
 // * @param seps
 // * @return
@@ -98,6 +103,7 @@ char *read_file(char *filename) {
 
 
 /**
+ * trim fonction
  * if you can modify the string
  * @param str
  * @return
@@ -111,7 +117,6 @@ char *trim(char *str) {
     if(*str == 0)  // All spaces?
         return str;
 
-    int b = isspace(str[1]);
     // Trim trailing space
     end = str + strlen(str) - 1;
     while(end > str && isspace((unsigned char)*end)) end--;
@@ -124,8 +129,8 @@ char *trim(char *str) {
 
 
 /**
- *
- * @param s
+ * remove spaces from a string
+ * @param s the string to be trimed
  */
 void remove_spaces(char* s) {
     const char* d = s;
@@ -133,11 +138,18 @@ void remove_spaces(char* s) {
         while (*d == ' ') {
             ++d;
         }
-    } while (*s++ = *d++);
+    } while ((*s++ = *d++));
 }
 
 
-int only_digits_in(char *s, char * c, int * pos){
+/**
+ *
+ * @param s
+ * @param c
+ * @param pos
+ * @return
+ */
+int strdigits(char *s, char *c, int *pos){
     for (int i = 0; i < strlen(s); ++i){
         if (s[i] < '0' || s[i] > '9'){
             *c = s[i];

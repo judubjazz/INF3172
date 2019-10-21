@@ -6,8 +6,12 @@ LDFLAGS= -pthread -lpthread
 
 all:tp1
 
-tp1: TP1.c
+tp1: utils.c
 	$(GCC) $(LDFLAGS) $(CFLAGS) TP1.c -o TP1
 
 clean:
 	rm -f TP1
+	rm -f utils
+
+test:tp1
+	./TP1
