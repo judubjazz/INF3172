@@ -88,32 +88,19 @@ make test
 
 ## Dépendances
 
-* Pour compiler le code source, il faut installer [Haskell](https://www.haskell.org/platform/) avec le compilateur ghc. 
-* Pour compiler les tests, [Doctest](https://github.com/sol/doctest#readme) est nécessaire.
-* Pour générer la documentation [Haddock](https://www.haskell.org/haddock/) est nécessaire.
-* Pour dessiner les graphes [Graphviz](http://graphviz.org/) doit être installé.
+* Pour compiler le code source, il faut au moins [GCC](https://gcc.gnu.org/) avec le standard c99. 
 
 
 ## Références
 
-* https://www.tutorialspoint.com/haskell/haskell_basic_operators.htm
-* http://hackage.haskell.org/package/base-4.12.0.0/docs/
-* https://hackage.haskell.org/package/hlint
-* http://learnyouahaskell.com/
-* https://wiki.haskell.org/Programming_guidelines
+* https://www.tutorialspoint.com/c_standard_library/
 
 ## Statut
 
-* [x] L'URL du dépôt GitLab est exactement https://gitlab.info.uqam.ca/guite-vinet.julien/inf6120-aut2019-tp1
-* [x] L'utilisateur `blondin_al` a accès au projet en mode *Developer* .
-* [x] Le projet est un clone (fork) privé du projet.
-https://gitlab.info.uqam.ca/inf6120-aut2019/inf6120-aut2019-tp1.
 * [x] Le projet compile lorsqu'on entre `make`. Il supporte les cibles `test` et `clean`. 
 * [x] Le fichier `README.md` est complété.
 * [x] Les modules sont documentés.
 * [x] Il n'y a aucune modification des signatures des fonctions et des définitions des types fournis.
 * [x] Le programme ne contient pas de valeurs magiques.
 * [x] Le programme fonctionne sur le serveur Java.
-* [x] Toutes les fonctions des modules InfInt, Graph, SpTree, ColorSpGraph et VcSpGraph sont complétées.
-* [x] Le code suit le standard recommandé pour Haskell.
 * [x] Tous les tests fonctionnent.

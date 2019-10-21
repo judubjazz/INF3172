@@ -13,11 +13,8 @@
   <component name="ChangeListManager">
     <list default="true" id="b254b4e1-1c65-4e94-b4ed-d5fe89af3313" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TP1" beforeDir="false" afterPath="$PROJECT_DIR$/TP1" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TP1.c" beforeDir="false" afterPath="$PROJECT_DIR$/TP1.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils.c" beforeDir="false" afterPath="$PROJECT_DIR$/utils.c" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -49,8 +46,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/TP1.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2685">
-              <caret line="179" column="5" lean-forward="true" selection-start-line="179" selection-start-column="5" selection-end-line="179" selection-end-column="5" />
+            <state relative-caret-position="-38">
+              <caret line="335" column="22" selection-start-line="335" selection-start-column="22" selection-end-line="335" selection-end-column="22" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -134,7 +131,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="-1" />
     <option name="width" value="784" />
     <option name="height" value="427" />
@@ -211,12 +208,12 @@
       <workItem from="1570424778750" duration="19007000" />
       <workItem from="1570510861914" duration="1579000" />
       <workItem from="1571566862480" duration="1441000" />
-      <workItem from="1571627402478" duration="3267000" />
+      <workItem from="1571627402478" duration="4801000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="47254000" />
+    <option name="totallyTimeSpent" value="48788000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-3" y="0" width="1606" height="870" extended-state="6" />
@@ -381,8 +378,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/TP1.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2685">
-          <caret line="179" column="5" lean-forward="true" selection-start-line="179" selection-start-column="5" selection-end-line="179" selection-end-column="5" />
+        <state relative-caret-position="-38">
+          <caret line="335" column="22" selection-start-line="335" selection-start-column="22" selection-end-line="335" selection-end-column="22" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
