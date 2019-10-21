@@ -10,12 +10,12 @@
 
 
 #define USAGE          "Le fichier test doit se nommer test.txt et se trouver à la raciner du projet."
-#define MSG_OK         "Bravo! Votre Sudoku est valide!\n"
-#define ERR_SIZE       "La taille de la grille de Sudoku devrait être 9x9.\n"
-#define ERR_DIGIT      "La case (%d,%d) contient un caractère non-entier.\n"
-#define ERR_SPEC_CHAR  "La case (%d,%d) contient un caractère spécial non admis.\n"
-#define ERR_DBL        "Il y a un doublon %d dans la grille 9 x 9.\n"
-#define ERR_DBL2       "Il y a un doublon %d dans une sous-grilles 3 x 3 numéro %d.\n"
+#define MSG_OK         "Thread #%d: Bravo! Votre Sudoku est valide!\n"
+#define ERR_SIZE       "Thread #%d: La taille de la grille de Sudoku devrait être 9x9.\n"
+#define ERR_DIGIT      "Thread #%d: La case (%d,%d) contient un caractère non-entier.\n"
+#define ERR_SPEC_CHAR  "Thread #%d: La case (%d,%d) contient un caractère spécial non admis.\n"
+#define ERR_DBL        "Thread #%d: Il y a un doublon %d dans la grille 9 x 9.\n"
+#define ERR_DBL2       "Thread #%d: Il y a un doublon %d dans la sous-grilles 3 x 3 numéro %d.\n"
 #define MAX_SIZE       256
 #define MAX_THREADS    11
 #define CHECK_ROW      0
@@ -380,19 +380,19 @@ void join_threads(struct thread * t){
         if (status != 0) handle_error("pthread_join");
     
         if (t[tnum].data->ok){
-            printf(MSG_OK);
+            printf(MSG_OK, t[tnum].thread_num);
         } else {
             // 5 possible errors
             switch(t[tnum].data->_errno){
-                case ERRNO_SIZE:  printf(ERR_SIZE);
+                case ERRNO_SIZE:  printf(ERR_SIZE, t[tnum].thread_num);
                     break;
-                case ERRNO_DIGIT: printf(ERR_DIGIT, t[tnum].data->row, t[tnum].data->col);
+                case ERRNO_DIGIT: printf(ERR_DIGIT,t[tnum].thread_num, t[tnum].data->row, t[tnum].data->col);
                     break;
-                case ERRNO_CHAR:  printf(ERR_SPEC_CHAR, t[tnum].data->row, t[tnum].data->col);
+                case ERRNO_CHAR:  printf(ERR_SPEC_CHAR,t[tnum].thread_num, t[tnum].data->row, t[tnum].data->col);
                     break;
-                case ERRNO_DBL:   printf(ERR_DBL, t[tnum].data->doublon);
+                case ERRNO_DBL:   printf(ERR_DBL,t[tnum].thread_num, t[tnum].data->doublon);
                     break;
-                case ERRNO_DBL2:  printf(ERR_DBL2, t[tnum].data->doublon, t[tnum].data->box);
+                case ERRNO_DBL2:  printf(ERR_DBL2,t[tnum].thread_num, t[tnum].data->doublon, t[tnum].data->box);
                     break;
                 default:handle_error("switch pthread join");
             }
