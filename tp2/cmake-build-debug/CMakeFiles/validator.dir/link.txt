@@ -1,0 +1,1 @@
+/usr/bin/cc -g   CMakeFiles/validator.dir/validator.c.o  -o validator 

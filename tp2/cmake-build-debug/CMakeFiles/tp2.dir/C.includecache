@@ -1,0 +1,38 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/ju/Projects/CLionProjects/INF3172/tp2/TP2.c
+pthread.h
+-
+semaphore.h
+-
+utils.c
+/home/ju/Projects/CLionProjects/INF3172/tp2/utils.c
+
+/home/ju/Projects/CLionProjects/INF3172/tp2/utils.c
+stdio.h
+-
+stdlib.h
+-
+string.h
+-
+ctype.h
+-
+stdbool.h
+-
+zconf.h
+-
+unistd.h
+-
+sys/stat.h
+-
+fcntl.h
+-
+sys/file.h
+-
+

@@ -1,0 +1,1 @@
+/usr/bin/cc -g   CMakeFiles/tp2.dir/TP2.c.o  -o tp2 -pthread 

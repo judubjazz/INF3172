@@ -1,0 +1,6 @@
+0          Socrates            mange
+1          Epicurus            mange
+2          Pythagoras          mange
+3          Plato               mange
+4          Aristotle           mange
+
