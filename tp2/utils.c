@@ -7,7 +7,6 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-
 #include <sys/file.h> //flock
 
 
@@ -15,7 +14,7 @@
 #define handle_error_en(en, msg) \
                do { errno = en; perror(msg); exit(EXIT_FAILURE); } while (0)
 #define handle_error(msg) \
-               do { perror(msg); exit(EXIT_FAILURE); } while (0)
+               do { fprintf(stderr,"%s\n",msg); exit(EXIT_FAILURE); } while (0)
 
 /**
  * read a file
@@ -127,19 +126,9 @@ void test_lock2(int fd1, const char *filename){
     }
 }
 
-char * _philosopher(int id){
-    switch (id){
-        case 0:return "Socrates  ";
-        case 1:return "Epicurus  ";
-        case 2:return "Pythagoras";
-        case 3:return "Plato     ";
-        case 4:return "Aristotle ";
-        default:handle_error("philosopher\n");
-    }
-}
 
 
-bool is_flock(const char * filename, int fd){
+bool is_locked(const char *filename, int fd){
     struct flock test;
     test.l_type = F_WRLCK;
     test.l_whence = SEEK_SET;
@@ -159,77 +148,38 @@ bool is_flock(const char * filename, int fd){
     }
 }
 
-FILE * _flock(FILE * file, char * mode, const char * filename, int * fd, struct flock lock){
-    file = fopen(filename, mode);
-    *fd = fileno(file);
-    printf ("locking file %s\n", filename);
+bool activate_lock(int type, const char *filename, int *fd, struct flock fl, int start, int end){
+    *fd = open(filename, O_WRONLY | O_APPEND | O_CREAT, 0644);
+    if(is_locked(filename, *fd)){
+        return false;
+    };
 
-    //Initialize the flock structure.
-    memset (&lock, 0, sizeof(lock));
-    lock.l_type = F_WRLCK;
-    // Place a write lock on the file.
-    fcntl (*fd, F_SETLKW, &lock);
+    fl.l_type = type;
+    fl.l_start = start;
+    fl.l_len = end;
 
-    return file;
+    fcntl (*fd, F_SETLKW, &fl);
+    return true;
 }
 
 
-int delete_line(const char * filename, int n){
+int lock_to_delete(const char *filename, int n, void (*delete)(FILE *, FILE *, int)){
     int fd;
-    int fd2;
-    struct flock lock;
-//    struct flock lock2;
-
-    /* Open a file descriptor to the file. */
-//    fd = open (filename, O_WRONLY);
+    struct flock fl;
     FILE * fileptr1;
-//    FILE *fileptr2;
+    FILE * fileptr2;
 
 
-    fileptr1 = _flock(fileptr1, "r", filename, &fd,lock);
-//    fileptr2 = fopen("replica.txt", "w");
-//    fileptr2 = _flock(fileptr2,"w", "replica.txt", &fd2,lock2);
+    //Initialize the flock structure.
+    memset (&fl, 0, sizeof(fl));
+    if(!activate_lock(F_WRLCK, filename, &fd, fl, 0, 0)) return 0;
+    fileptr1= fopen(filename, "r");
+    fileptr2 = fopen("replica.txt", "w");
 
 
-
-    // start deleteing ************
-//    char c;
-//    char s[MAX_SIZE];
-//    c = getc(fileptr1);
-//    while (c != EOF) c = getc(fileptr1);
-//
-//    //rewind
-//    rewind(fileptr1);
-//
-//
-//    c = n + '0';
-//    char s2[64];
-//    char * space = "          ";
-//    char id[2];
-
-//    while (fscanf(fileptr1, "%s", s) == 1) {
-//        if(s[0]==c){
-//            // match the id of the philospher
-//            // scan the name and the action
-//            fscanf(fileptr1,"%s",s);
-//            fscanf(fileptr1,"%s",s);
-//        } else if(s[0]=='C'){
-//            // skip header
-//            char * header = "Code          Nom          Action\n";
-//            fputs(header,fileptr2);
-//            fscanf(fileptr1,"%s",s);
-//            fscanf(fileptr1,"%s",s);
-//        } else {
-//            char * philosopher = _philosopher(s[0]-'0');
-//            sprintf(id,"%c",s[0]);
-//            // skip the philophser name
-//            fscanf(fileptr1,"%s",s);
-//            fscanf(fileptr1,"%s",s);
-//            sprintf(s2,"%s%s%s%s%s\n",id,space,philosopher,space,s);
-//            fputs(s2,fileptr2);
-//        }
-//
-//    }
+//  start deleting ************
+    (*delete)(fileptr1,fileptr2,n);
+// ************
 
 
     printf ("locked; hit Enter to unlock... \n");
@@ -237,22 +187,78 @@ int delete_line(const char * filename, int n){
     getchar();
     printf ("unlocking\n");
 
-//    remove(filename);
-//    rename("replica.txt", filename);
+    remove(filename);
+    rename("replica.txt", filename);
 
-    /* Release the lock. */
-    lock.l_type = F_UNLCK;
-    fcntl (fd, F_SETLKW, &lock);
-//    lock2.l_type = F_UNLCK;
-//    fcntl (fd2, F_SETLKW, &lock2);
-
-
-
+    // Release the fl
+    fl.l_type = F_UNLCK;
+    fcntl (fd, F_SETLKW, &fl);
     close (fd);
     fclose(fileptr1);
-//    fclose(fileptr2);
-    return 0;
+    fclose(fileptr2);
+    return 1;
 }
+
+
+int lock_to_update(const char *filename, int philospher_id, char *name, char *action, void (*update)(FILE *, FILE *, int, char *, char *)){
+    int fd;
+    struct flock fl;
+    FILE * fileptr1;
+    FILE * fileptr2;
+    int philosophes_lines[10];
+    int i = 0;
+    char line[MAX_SIZE];
+
+    // prevent other thread from aquiring a writing lock
+    memset (&fl, 0, sizeof(fl));
+    if(!activate_lock(F_RDLCK, filename, &fd, fl, 0, 0))return 0;
+
+    // seek philosophers lines
+    fileptr1 = fopen(filename, "r");
+    for(int no_line=1;fgets(line, sizeof(line),fileptr1) != NULL ;++no_line){
+        if(line[0]==(philospher_id + '0')){
+            philosophes_lines[i]= no_line;
+            ++i;
+        }
+    }
+
+    //release read lock
+    fl.l_type = F_UNLCK;
+    fcntl (fd, F_SETLKW, &fl);
+
+    // activate write locks on fields
+    int offset = strlen(line);
+    for(i = 0; i < 10; ++i){
+        int philosophe_line = philosophes_lines[i];
+        int start = philosophe_line * offset;
+        int end = start + offset;
+        if(!activate_lock(F_WRLCK, filename, &fd, fl, start,end))return 0;
+    }
+
+    // update fields
+    fileptr2 = fopen("replica.txt", "w");
+    rewind(fileptr1);
+
+    (*update)(fileptr1,fileptr2,philospher_id, name, action);
+
+    /* Wait for the user to hit Enter. */
+    printf ("Enter to unlock... \n");
+    getchar();
+    getchar();
+    printf ("unlocking\n");
+
+    remove(filename);
+    rename("replica.txt", filename);
+
+    // Release locks
+    fl.l_type = F_UNLCK;
+    fcntl (fd, F_SETLKW, &fl);
+    close (fd);
+    fclose(fileptr1);
+    fclose(fileptr2);
+    return 1;
+}
+
 
 /**
  *

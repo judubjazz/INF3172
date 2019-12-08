@@ -6,22 +6,6 @@
 
 #IncludeRegexTransform: 
 
-/home/ju/Projects/CLionProjects/INF3172/tp2/TP2.c
-pthread.h
--
-semaphore.h
--
-utils.c
-/home/ju/Projects/CLionProjects/INF3172/tp2/utils.c
-test.c
-/home/ju/Projects/CLionProjects/INF3172/tp2/test.c
-
-/home/ju/Projects/CLionProjects/INF3172/tp2/test.c
-assert.h
--
-sys/wait.h
--
-
 /home/ju/Projects/CLionProjects/INF3172/tp2/utils.c
 stdio.h
 -
@@ -43,4 +27,12 @@ fcntl.h
 -
 sys/file.h
 -
+
+/home/ju/Projects/CLionProjects/INF3172/tp2/validator.c
+pthread.h
+-
+semaphore.h
+-
+utils.c
+/home/ju/Projects/CLionProjects/INF3172/tp2/utils.c
 
