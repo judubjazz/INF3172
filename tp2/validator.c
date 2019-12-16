@@ -12,43 +12,55 @@
 #define P2 "Pythagoras"
 #define P3 "Plato     "
 #define P4 "Aristotle "
-#define EAT          0
-#define THINK        1
-#define MAX_THREADS  5
-#define SLEEPTIME    0
 #define SPACE "          "
-#define HEADER "Code          Nom          Action\n"
+#define HEADER "Code          Nom          Action   \n"
 #define MENU "\n\n1)Consulter résultat\n2)Modifier le nom d'un philosphe\n3)Supprimer le nom d'un philosophe\n4)Modifier l'action et le nom d'un philosophe\n5)Quitter\n"
 #define MAN "\nChoisissez un numéro entre 1 et 5\n"
-#define SELECT       1
+#define SELECT        1
 #define UPDATE_NAME   2
-#define DELETE       3
+#define DELETE        3
 #define UPDATE_ACTION 4
-#define QUIT         5
-#define NAME         0
-#define ACTION       1
+#define QUIT          5
+#define NAME          0
+#define ACTION        1
+#define EAT           "mange"
+#define THINK         "pense"
+#define TMP_FOLDER    "tmp.txt"
+#define MAX_THREADS   5
+#define SLEEPTIME     0
+#define SIZE_LINE     37
+#define SIZE_FILE     1888
+#define SIZE_NAME     12
+#define TRY_AGAIN     "Veuillez réessayer plus tard\n"
+#define STDIN_PHILOSOPHER_ID "Entrer le id du philosophe à modifier (0 à 4)\n"
+#define STDIN_PHILOSOPHER_NAME "Entrer le nouveau nom\n"
+#define STDIN_ACTION "Entrer la nouvelle action du philosophe (mange ou pense)\n"
+#define ERR_SIZE_NAME "Le nom doit être de maximum 10 caractères\n"
+#define ERR_ACTION "L'action doit être mange ou pense\n"
+#define ERR_PHILOSOPHER_ID "le id doit être entre 0 et 4\n"
+
+#define N 5
+#define THINKING 2
+#define HUNGRY 1
+#define EATING 0
+#define LEFT \
+    (id + 4) % N
+#define RIGHT \
+    (id + 1) % N
+int state[N];
+int phil[N] = { 0, 1, 2, 3, 4 };
 
 
 //implicit declaration
-void *pickup_forks(void * param);
-void *return_forks(void * param);
-void *delete_philosopher(void * param);
+void *cogitate(void * param);
+void pickup_forks(int phnum);
+void return_forks(int id);
 void menu();
 
 pthread_mutex_t mutex;
+pthread_cond_t S[N];
 char const* filename;
 char buffer[MAX_SIZE*5];
-//pthread_mutex_init (&mutex, NULL);
-//pthread_cond_init (&cond_var, NULL);
-
-struct thread {
-    pthread_t      thread_id;        /* ID returned by pthread_create() */
-    pthread_cond_t notbusy;
-    int            philosopher_id;       /* Application-defined thread # */
-    char *         philosopher_name;
-    int            action;
-
-};
 
 
 char * philosopher(int id){
@@ -62,167 +74,196 @@ char * philosopher(int id){
     }
 }
 
-int philosopher_id(char * name){
-    //TODO refactor this
-    char const* p0 = "Socrates";
-    char const* p1 = "Epicurus";
-    char const* p2 = "Pythagoras";
-    char const* p3 = "Plato";
-    char const* p4 = "Aristotle";
-
-
-    if      (!strcmp(name,p0)) return 0;
-    else if (!strcmp(name,p1)) return 1;
-    else if (!strcmp(name,p2)) return 2;
-    else if (!strcmp(name,p3)) return 3;
-    else if (!strcmp(name,p4)) return 4;
-    fprintf(stderr, "Le philosophe %s n'existe pas\n", name);
-    menu();
+char * get_action(char c){
+    return c == 'm' ? EAT : THINK;
 }
 
-void delete_line2(FILE * fileptr1, FILE * fileptr2, int philosopher_id){
-    char c;
-    char s[MAX_SIZE];
-    c = getc(fileptr1);
-    while (c != EOF) c = getc(fileptr1);
+void delete_philosopher(int fd, int philosopher_id){
+    char buf[SIZE_FILE];
+    buf[SIZE_FILE] = '\0';
+    char s[64];
+    char * line;
 
-    rewind(fileptr1);
+    read(fd,buf,SIZE_FILE);
 
-    char s2[64];
-    char id[2];
-
-    while (fscanf(fileptr1, "%s", s) == 1) {
-        if(s[0]==(philosopher_id+'0')){
-            // match the id of the philospher
-            // scan the name and the action
-            fscanf(fileptr1,"%s",s);
-            fscanf(fileptr1,"%s",s);
-        } else if(s[0]=='C'){
+    int fd2 = open(TMP_FOLDER, O_RDWR | O_APPEND | O_CREAT, 0644);
+    line = strtok(buf,"\n");
+    do{
+        if(line[0]=='C'){
             // skip header
-            fputs(HEADER,fileptr2);
-            fscanf(fileptr1,"%s",s);
-            fscanf(fileptr1,"%s",s);
-        } else {
-            char * p = philosopher(philosopher_id -'0');
-            sprintf(id,"%c",s[0]);
-            // skip the philophser name
-            fscanf(fileptr1,"%s",s);
-            // scan the action
-            fscanf(fileptr1,"%s",s);
-            sprintf(s2,"%s%s%s%s%s\n",id,SPACE,p,SPACE,s);
-            // put the new line on file2
-            fputs(s2,fileptr2);
+            write(fd2,HEADER,SIZE_LINE);
+        } else if (line[0] != philosopher_id+'0') {
+            sprintf(s,"%s\n",line);
+            write(fd2,s,SIZE_LINE);
         }
-    }
+        line = strtok(NULL,"\n");
+    }while(line != NULL);
+
+    remove(filename);
+    rename(TMP_FOLDER, filename);
+    close(fd2);
+    close(fd);
 }
 
-
-
-void *delete_philosopher(void *param){
-    struct thread *t = param;
-    pthread_mutex_lock(&mutex);
-    int fd = open(filename,O_RDWR);
-    int status = lockf(fd,F_TEST,0);
-    fprintf(stderr,"file descriptor: %d\n",fd);
-    fprintf(stderr,"\nstatus : %d\n", status);
-//    delete_line(filename, t->philosopher_id);
-    pthread_mutex_unlock (&mutex);
-    pthread_exit(0);
-
-}
 
 void delete(){
-    printf("Entrer le id du philosophe (1 à 5)\n");
+    int fd = open(filename, O_APPEND | O_CREAT | O_RDWR, 0644);
     int id;
+
+    if(!activate_lock(fd,SIZE_FILE)){
+        fprintf(stderr, TRY_AGAIN);
+        return;
+    }
+
+    printf(STDIN_PHILOSOPHER_ID);
     scanf("%d",&id);
-    if(id < 1 || id > 5) {
-        fprintf(stderr, "le id doit être entre 1 et 5\n");
+
+    if(id < 0 || id > 4) {
+        fprintf(stderr, ERR_PHILOSOPHER_ID);
         delete();
     }
-    lock_to_delete(filename, id, delete_line2);
+    delete_philosopher(fd,id);
+    release_lock(fd, SIZE_FILE);
 }
 
-void update_name(FILE * fileptr1, FILE * fileptr2, int philosopher_id, char* name, char * action){
-    char line[MAX_SIZE];
-    char * pid;
-    char line2[MAX_SIZE];
+void update_philosopher(int fd, int fd2, int philosopher_id, char *name, char *action){
+    char * line;
+    char s[SIZE_LINE];
+    char buf[SIZE_FILE];
+    buf[SIZE_FILE] = '\0';
 
-    while (fgets(line, sizeof(line),fileptr1) != NULL ) {
-        if(line[0]== (philosopher_id + '0')){
-            pid = strtok(line," ");
-            //skip name
-            strtok(NULL," ");
+    read(fd,buf,SIZE_FILE);
 
-            if(action == NULL){
+    line = strtok(buf,"\n");
+    while(line != NULL){
+        if(line[0]=='C'){
+            write(fd2,HEADER,SIZE_LINE);
+        } else if (line[0] != philosopher_id+'0') {
+            sprintf(s,"%s\n",line);
+            write(fd2,s,SIZE_LINE);
+        } else {
+            if(action == NULL) {
                 // need to scan the action
-                action = strtok(NULL," ");
-                sprintf(line2,"%s%s%s%s%s",pid,SPACE,name,SPACE,action);
+                action = get_action(line[31]);
+                sprintf(s, "%c%s%s%s%s\n", line[0], SPACE, name, SPACE, action);
                 action = NULL;
             } else {
-                // update the action
-                strtok(NULL," ");
-                sprintf(line2,"%s%s%s%s%s",pid,SPACE,name,SPACE,action);
+                sprintf(s, "%c%s%s%s%s\n", line[0], SPACE, name, SPACE, action);
             }
-            fputs(line2,fileptr2);
-        } else {
-            fputs(line,fileptr2);
+            write(fd2,s,SIZE_LINE);
         }
+        line = strtok(NULL,"\n");
     }
 }
 
 
 void update(int option){
     char name[64];
-    char empty[15];
+    char padding[15];
     char action [8];
-    int id;
-    memset(empty,' ',15);
+    int id,fd,i;
+    memset(padding,' ',15);
+    FILE * fileptr1;
+    int philosophes_lines[10];
+    char line[MAX_SIZE];
 
-    printf("Entrer le id du philosophe à modifier (0 à 4)\n");
+    printf(STDIN_PHILOSOPHER_ID);
     scanf("%d",&id);
     if(id < 0 || id > 4) {
-        fprintf(stderr, "le id doit être entre 0 et 4\n");
+        fprintf(stderr, ERR_PHILOSOPHER_ID);
         update(option);
     }
 
-    printf("Entrer le nouveau nom\n");
+    // seek philosophers lines
+    i = 0;
+    fileptr1 = fopen(filename, "r");
+    for(int no_line=1;fgets(line, sizeof(line),fileptr1) != NULL ;++no_line){
+        if(line[0]==(id + '0')){
+            philosophes_lines[i]= no_line;
+            ++i;
+        }
+    }
+    fclose(fileptr1);
+
+    fd = open(filename, O_RDWR| O_APPEND | O_CREAT, 0644);
+    if(!activate_lock(fd, SIZE_FILE)){
+        fprintf(stderr, TRY_AGAIN);
+        update(option);
+    }
+
+    printf(STDIN_PHILOSOPHER_NAME);
     scanf("%s",name);
     if(strlen(name) > 10){
-        fprintf(stderr, "le nom doit être de maximum 10 caractères\n");
+        fprintf(stderr, ERR_SIZE_NAME);
         update(option);
     }
 
     if(option == ACTION){
-        const char * pense = "pense";
-        const char * mange = "mange";
-        printf("Entrer la nouvelle action du philosophe (mange ou pense)\n");
+        printf(STDIN_ACTION);
         scanf("%s",action);
-        if (strcmp(action, pense) && strcmp(action, mange)){
-            fprintf(stderr, "L'action doit être mange ou pense\n");
+        if (strcmp(action, THINK) && strcmp(action, EAT)){
+            fprintf(stderr, ERR_ACTION);
             update(option);
         }
-        action[5] = '\n';
+        action[5] = '\0';
     }
 
     // resize name to fit columns in the file
-    strcat(name,empty);
+    strcat(name,padding);
     name[10] = '\0';
 
+    release_lock(fd, SIZE_FILE);
+    // activate write locks on fields
+    for(i = 0; i < 10; ++i){
+        int philosophe_line = philosophes_lines[i];
+        int start = philosophe_line * SIZE_LINE;
+        set_position(fd,start);
+        switch(option){
+            case ACTION:
+                if(!activate_lock(fd,SIZE_LINE)){
+                    fprintf(stderr,TRY_AGAIN);
+                    return;
+                }
+                break;
+            case NAME:
+                if(!activate_lock(fd,SIZE_NAME)){
+                    fprintf(stderr,TRY_AGAIN);
+                    return;
+                }
+                break;
+            default:
+                fprintf(stderr,TRY_AGAIN);
+                return;
+        }
+//        if(!activate_lock(fd,SIZE_LINE)){
+//            fprintf(stderr,TRY_AGAIN);
+//            return;
+//        }
+    }
+
+    set_position(fd,0);
+    int fd2 = open(TMP_FOLDER, O_RDWR| O_APPEND | O_CREAT, 0644);
 
     if(option == ACTION){
-        lock_to_update(filename, id, name, action, update_name);
+        update_philosopher(fd,fd2,id,name,action);
     } else {
-        lock_to_update(filename, id, name, NULL, update_name);
+        update_philosopher(fd,fd2,id,name,NULL);
     }
+    remove(filename);
+    rename(TMP_FOLDER,filename);
+    set_position(fd,0);
+    release_lock(fd,SIZE_FILE);
+    close(fd);
+    close(fd2);
 
 }
 
 void menu(){
     printf("%s", MENU);
-    char s[64];
-    scanf("%s",s);
-    int n = atoi(s);
-    switch(n){
+    char option[64];
+    scanf("%s",option);
+    int o = atoi(option);
+    switch(o){
         case SELECT:
             printf("%s",read_file(filename));
             menu();
@@ -249,90 +290,100 @@ void menu(){
 
 }
 
-char * action (int a){
-    return a == EAT ? "mange" : "pense";
-}
 
-void buffercat(struct thread *t){
+void buffercat(char * action, int philosopher_id ){
     char s[64];
-    char * a = action(t->action);
-    char * p = philosopher(t->philosopher_id);
-    sprintf(s,"%d%s%s%s%s\n",t->philosopher_id,SPACE, p, SPACE, a);
+    char * p = philosopher(philosopher_id);
+    sprintf(s,"%d%s%s%s%s\n",philosopher_id,SPACE, p, SPACE, action);
+//    printf("SIZE LINE %d\n", strlen(s));
     strcat(buffer, s);
 }
 
-void *return_forks(void* param){
-    struct thread *t = param;
-    pthread_mutex_lock(&mutex);
-    while (t->action ==EAT)
-        pthread_cond_wait(&t->notbusy, &mutex);
-    buffercat(t);
-    t->action = EAT;
-    pthread_mutex_unlock (&mutex);
+
+
+void check_state(int id){
+    if (state[id] == HUNGRY && state[LEFT] != EATING && state[RIGHT] != EATING) {
+        state[id] = EATING;
+        buffercat(EAT,id);
+        // wake up hungry philosophers during return_fork
+        pthread_cond_signal(&S[id]);
+    }
 }
 
-void *pickup_forks(void * param){
-    struct thread *t = param;
+
+// take up chopsticks
+void pickup_forks(int id){
     pthread_mutex_lock(&mutex);
-    buffercat(t);
-    t->action = THINK;
-    pthread_mutex_unlock (&mutex);
-    pthread_cond_signal(&t->notbusy);
+
+    state[id] = HUNGRY;
+
+    // eat if neighbours are not eating
+    check_state(id);
+
+    pthread_cond_signal(&S[id]);
+    pthread_mutex_unlock(&mutex);
+
 }
+
+// put down chopsticks
+void return_forks(int id){
+
+    pthread_mutex_lock(&mutex);
+    while (state[id] == HUNGRY)
+        pthread_cond_wait(&S[id], &mutex);
+
+    state[id] = THINKING;
+    buffercat(THINK,id);
+
+    check_state(LEFT);
+    check_state(RIGHT);
+
+    pthread_mutex_unlock(&mutex);
+}
+
 
 void * cogitate(void * param){
-    struct thread *t = param;
+    int * id = param;
     for (int i = 0; i<5;++i){
-        pickup_forks(param);
+        pickup_forks(*id);
 //        sleep(1);
-        return_forks(param);
+        return_forks(*id);
 //        sleep(1);
     }
+//    printf("END FOR PHIL %d\n", *id);
     pthread_exit(0);
 }
 
 void create_db(){
-    struct thread * t;
-    t = calloc(MAX_THREADS, sizeof(struct thread));
-    strcat(buffer, HEADER);
+    pthread_t thread_id[N];
 
+    strcat(buffer,HEADER);
     // Create one thread for each 5 philosophers
-    for (int tnum = 0; tnum < MAX_THREADS; tnum++) {
-        t[tnum].thread_id = tnum;
-        t[tnum].philosopher_id = tnum;
-        t[tnum].action = EAT;
-
-        if (pthread_create(&t[0].thread_id, NULL, &cogitate, &t[tnum]))
+    for (int i = 0; i < MAX_THREADS; i++)
+        if (pthread_create(&thread_id[i], NULL, &cogitate, &phil[i]))
             handle_error("pthread create");
-    }
 
-    //wait the threads response
-    if(pthread_join(t[0].thread_id, NULL))
-        handle_error("pthread join");
+    for (int i = 0; i < N; i++)
+        if(pthread_join(thread_id[i], NULL))
+            handle_error("pthread join");
 
+    buffer[SIZE_FILE] = '\0';
     write_file(filename,buffer);
-    free(t);
 }
+
+
+
+
 
 int main(int argc, char *argv[]) {
     char cwd[MAX_SIZE];
     getcwd(cwd, sizeof(cwd));
     check_args(argc, argv, cwd);
     filename = strcat(cwd, "/resultat.txt");
-
-
-//    create_db();
-//    if(!delete_line(filename,0, delete_line2)){
-//        perror("Impossible de supprimer, Réessayer plus tard");
-//    }
+    pthread_mutex_init (&mutex, NULL);
+    create_db();
     menu();
-    //TODO check for new name to be valid size
-//    update(ACTION);
-//    update(ACTION);
 
-//    if(!update_line(filename, 0, "roger", NULL, update_name)){
-//        printf("Veuillez essayer plus tard");
-//    }
 //    test_delete(filename, 0, delete_line2);
 //    test_update(filename, 1,"roger", "rote", update_name);
 

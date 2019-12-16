@@ -16,6 +16,8 @@ clean:
 	rm -f TP2
 	rm -f validator
 	rm -f *.o
+	rm -f replica.txt
+	rm -f resultat.txt
 
 
 test:tp2

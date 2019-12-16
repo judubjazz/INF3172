@@ -14,7 +14,7 @@
 #define handle_error_en(en, msg) \
                do { errno = en; perror(msg); exit(EXIT_FAILURE); } while (0)
 #define handle_error(msg) \
-               do { fprintf(stderr,"%s\n",msg); exit(EXIT_FAILURE); } while (0)
+               fprintf(stderr,"%s\n",msg);
 
 /**
  * read a file
@@ -127,43 +127,67 @@ void test_lock2(int fd1, const char *filename){
 }
 
 
+//
+//bool is_locked(const char *filename, int fd){
+//    struct flock test;
+//    test.l_type = F_WRLCK;
+//    test.l_whence = SEEK_SET;
+//    test.l_start = 0;
+//    test.l_len = 0;
+//    test.l_pid = -1;
+//
+//    fcntl(fd, F_GETLK, &test);
+//
+//    if (test.l_type == F_UNLCK) {
+//        printf("UNLOCK\n");
+//        return false;
+//    }
+//    else {
+//        printf("LOCK\n");
+//        return true;
+//    }
+//}
+//
+//bool activate_lock(int type, const char *filename, int *fd, struct flock fl, int start, int end){
+//    *fd = open(filename, O_WRONLY | O_APPEND | O_CREAT, 0644);
+//    if(is_locked(filename, *fd)){
+//        return false;
+//    }
+//
+//    fl.l_type = type;
+//    fl.l_start = start;
+//    fl.l_len = end;
+//
+//    fcntl (*fd, F_SETLKW, &fl);
+//    return true;
+//}
 
-bool is_locked(const char *filename, int fd){
-    struct flock test;
-    test.l_type = F_WRLCK;
-    test.l_whence = SEEK_SET;
-    test.l_start = 0;
-    test.l_len = 0;
-    test.l_pid = -1;
-
-    fcntl(fd, F_GETLK, &test);
-
-    if (test.l_type == F_UNLCK) {
-        printf("UNLOCK\n");
-        return false;
-    }
-    else {
-        printf("LOCK\n");
-        return true;
+set_position(int fd, int bytes){
+    if (lseek(fd, bytes, SEEK_SET) == -1) {
+        exit(1);
     }
 }
+bool is_locked(int fd, int bytes){
+    return lockf(fd, F_TEST, bytes);
+}
 
-bool activate_lock(int type, const char *filename, int *fd, struct flock fl, int start, int end){
-    *fd = open(filename, O_WRONLY | O_APPEND | O_CREAT, 0644);
-    if(is_locked(filename, *fd)){
-        return false;
-    };
+bool activate_lock(int fd, int bytes){
+    // acquire exclusive lock for bytes in range [10; 15)
+    if(is_locked(fd,bytes))return false;
+    return !lockf(fd, F_LOCK, bytes);
+}
 
-    fl.l_type = type;
-    fl.l_start = start;
-    fl.l_len = end;
-
-    fcntl (*fd, F_SETLKW, &fl);
-    return true;
+bool release_lock(int fd, int bytes){
+    return !lockf(fd, F_ULOCK, bytes);
 }
 
 
-int lock_to_delete(const char *filename, int n, void (*delete)(FILE *, FILE *, int)){
+
+
+
+
+
+int lock_to_delete(const char *filename, int size, int id, void (*delete)(FILE *, FILE *, int)){
     int fd;
     struct flock fl;
     FILE * fileptr1;
@@ -172,13 +196,15 @@ int lock_to_delete(const char *filename, int n, void (*delete)(FILE *, FILE *, i
 
     //Initialize the flock structure.
     memset (&fl, 0, sizeof(fl));
-    if(!activate_lock(F_WRLCK, filename, &fd, fl, 0, 0)) return 0;
+//    if(!activate_lock(F_WRLCK, filename, &fd, fl, 0, 0)) return 0;
+
+    if (!activate_lock(fd,size))
     fileptr1= fopen(filename, "r");
     fileptr2 = fopen("replica.txt", "w");
 
 
 //  start deleting ************
-    (*delete)(fileptr1,fileptr2,n);
+    (*delete)(fileptr1,fileptr2,id);
 // ************
 
 
@@ -211,7 +237,7 @@ int lock_to_update(const char *filename, int philospher_id, char *name, char *ac
 
     // prevent other thread from aquiring a writing lock
     memset (&fl, 0, sizeof(fl));
-    if(!activate_lock(F_RDLCK, filename, &fd, fl, 0, 0))return 0;
+//    if(!activate_lock(F_RDLCK, filename, &fd, fl, 0, 0))return 0;
 
     // seek philosophers lines
     fileptr1 = fopen(filename, "r");
@@ -232,7 +258,7 @@ int lock_to_update(const char *filename, int philospher_id, char *name, char *ac
         int philosophe_line = philosophes_lines[i];
         int start = philosophe_line * offset;
         int end = start + offset;
-        if(!activate_lock(F_WRLCK, filename, &fd, fl, start,end))return 0;
+//        if(!activate_lock(F_WRLCK, filename, &fd, fl, start,end))return 0;
     }
 
     // update fields
