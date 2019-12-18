@@ -16,11 +16,9 @@ Se référer à la section [Dépendances](#dépendances) pour installer les libr
 
 ### Compilation
 - Ouvrir le terminal à la racine du projet
-- La commande `make` crée l'exécutable `TP2` et une copie du programme nommé `valider`
+- La commande `make` crée l'exécutable `TP2` et sa copie que l'on nomme `valider`
 
-```sh
-make 
-```
+
 ### Exécution
 - Une fois le programme compilé, on exécute le programme avec la commande `./TP1`.
 - On peut exécuter le validateur dans un autre terminal avec la commande `./valider`.

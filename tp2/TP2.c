@@ -551,9 +551,9 @@ void menu(){
         case QUIT:
             print(buffer);
             exit(0);
-        case TEST:
-            test();
-            menu();
+//        case TEST:
+//            test();
+//            menu();
         default:
             printf("%s\n", MAN);
             menu();
