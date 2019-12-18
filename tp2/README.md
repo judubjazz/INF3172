@@ -66,7 +66,7 @@ ainsi que tous les fichiers ayant une extention `.o`
 
 * utils.c: utilitaire pour manipulation de string et de fichier
 
-* resultat.txt: le fichier test contenant les actions des philosophes
+* resultat.txt: le fichier contenant les actions des philosophes
 
 
 ## Dépendances
