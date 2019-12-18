@@ -32,7 +32,7 @@
 #define NAME          0
 #define ACTION        1
 #define MAX_THREADS   5
-#define SLEEP_TIME    0
+#define SLEEP_TIME    1
 #define SIZE_LINE     37
 #define SIZE_FILE     1887
 #define SIZE_NAME     10
