@@ -9,8 +9,6 @@
 /home/ju/Projects/CLionProjects/INF3172/tp2/TP2.c
 pthread.h
 -
-semaphore.h
--
 utils.c
 /home/ju/Projects/CLionProjects/INF3172/tp2/utils.c
 
@@ -27,12 +25,6 @@ stdbool.h
 -
 zconf.h
 -
-unistd.h
--
-sys/stat.h
--
 fcntl.h
--
-sys/file.h
 -
 

@@ -2,23 +2,18 @@ GCC = gcc
 CFLAGS = -std=gnu99
 LDFLAGS= -pthread -lpthread
 
-.PHONY: clean
+.PHONY: all clean test
 
 all:tp2
 
-tp2: utils.c validator
+tp2: utils.c
 	$(GCC) $(LDFLAGS) $(CFLAGS) TP2.c -o TP2
-
-validator:
-	$(GCC) $(LDFLAGS) $(CFLAGS) validator.c -o validator
+	cp TP2 valider
 
 clean:
 	rm -f TP2
-	rm -f validator
+	rm -f valider
 	rm -f *.o
-	rm -f replica.txt
-	rm -f resultat.txt
-
 
 test:tp2
 	./TP2
