@@ -17,7 +17,7 @@
 #define STDIN_PHILOSOPHER_ID    "Entrer le id du philosophe (0 à 4):\n"
 #define STDIN_PHILOSOPHER_NAME  "Entrer le nouveau nom:\n"
 #define STDIN_ACTION            "Entrer la nouvelle action du philosophe (mange ou pense):\n"
-#define ERR_SCAN_NAME           "Le nom doit être de maximum 15 caractères.\n"
+#define ERR_SCAN_NAME           "Le nom doit être entre 1 et 15 caractères.\n"
 #define ERR_SCAN_ACTION         "L'action doit être mange ou pense.\n"
 #define ERR_SCAN_PHILOSOPHER_ID "Le id doit être entre 0 et 4.\n"
 #define ERR_LOCK_S_NAME         "Le champ <<%s>> est verrouillé, veuillez essayer plus tard.\n"
@@ -138,7 +138,7 @@ bool scan_name(char *name){
     printf(STDIN_PHILOSOPHER_NAME);
     char padding[SIZE_NAME];
     memset(padding,' ',SIZE_NAME);
-    fgets(name,64,stdin);
+    fgets(name,MAX_SIZE,stdin);
     int l = strlen(name)-1;
     if(!l || l > SIZE_NAME){
         return false;
@@ -217,7 +217,6 @@ void delete_philosopher(int fd, int fd2, int philosopher_id){
     buf[SIZE_FILE] = '\0';
 
     read(fd,buf,SIZE_FILE);
-    print(buf);
 
     line = strtok(buf,"\n");
     while(line != NULL){
