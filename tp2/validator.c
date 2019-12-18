@@ -1,14 +1,14 @@
 #include <pthread.h>
 #include "utils.c"
 
-#define P0                      "Socrates  "
-#define P1                      "Epicurus  "
-#define P2                      "Pythagoras"
-#define P3                      "Plato     "
-#define P4                      "Aristotle "
+#define P0                      "Socrates       "
+#define P1                      "Epicurus       "
+#define P2                      "Pythagoras     "
+#define P3                      "Plato          "
+#define P4                      "Aristotle      "
 #define SPACE                   "          "
-#define HEADER                  "Code          Nom          Action   \n"
-#define MENU                    "\n\n1)Consulter résultat\n2)Modifier le nom d'un philosphe\n3)Supprimer le nom d'un philosophe\n4)Modifier l'action et le nom d'un philosophe\n5)Quitter\n"
+#define HEADER                  "Code          Nom                  Action\n"
+#define MENU                    "\n\n1)Consulter résultat\n2)Modifier le nom d'un philosophe\n3)Supprimer le nom d'un philosophe\n4)Modifier l'action et le nom d'un philosophe\n5)Quitter\n"
 #define MAN                     "\nChoisissez un numéro entre 1 et 5.\n"
 #define EAT                     "mange"
 #define THINK                   "pense"
@@ -17,7 +17,7 @@
 #define STDIN_PHILOSOPHER_ID    "Entrer le id du philosophe (0 à 4):\n"
 #define STDIN_PHILOSOPHER_NAME  "Entrer le nouveau nom:\n"
 #define STDIN_ACTION            "Entrer la nouvelle action du philosophe (mange ou pense):\n"
-#define ERR_SCAN_NAME           "Le nom doit être de maximum 10 caractères.\n"
+#define ERR_SCAN_NAME           "Le nom doit être entre 1 et 15 caractères.\n"
 #define ERR_SCAN_ACTION         "L'action doit être mange ou pense.\n"
 #define ERR_SCAN_PHILOSOPHER_ID "Le id doit être entre 0 et 4.\n"
 #define ERR_LOCK_S_NAME         "Le champ <<%s>> est verrouillé, veuillez essayer plus tard.\n"
@@ -32,10 +32,10 @@
 #define NAME          0
 #define ACTION        1
 #define MAX_THREADS   5
-#define SLEEP_TIME    1
-#define SIZE_LINE     37
-#define SIZE_FILE     1887
-#define SIZE_NAME     10
+#define SLEEP_TIME    0
+#define SIZE_LINE     42
+#define SIZE_FILE     2142
+#define SIZE_NAME     15
 #define SIZE_ACTION   6
 #define SIZE_SPACE    10
 #define N             5
@@ -138,9 +138,9 @@ bool scan_name(char *name){
     printf(STDIN_PHILOSOPHER_NAME);
     char padding[SIZE_NAME];
     memset(padding,' ',SIZE_NAME);
-    fgets(name,SIZE_NAME+2,stdin);
-    if(strlen(name) > SIZE_NAME){
-        stdin_flush();
+    fgets(name,MAX_SIZE,stdin);
+    int l = strlen(name)-1;
+    if(!l || l > SIZE_NAME){
         return false;
     }
     // resize name to fit columns in the file
@@ -157,8 +157,8 @@ bool scan_name(char *name){
  */
 bool scan_action(char * action){
     printf(STDIN_ACTION);
-    fgets(action,SIZE_ACTION,stdin);
-    stdin_flush();
+    fgets(action,MAX_SIZE,stdin);
+    trim(action);
     if (strcmp(action, THINK) !=0 && strcmp(action, EAT) !=0){
         return false;
     }
@@ -314,7 +314,7 @@ void update_philosopher(int fd, int fd2, int philosopher_id, char *name, char *a
 /**
  * Asks stdin a philospherID
  * Update all lines matching it
- * Lines bytes offsets follow as ID=1 SPACE=10 NAME=10 SPACE=10 ACTION=5 EOL=1 TOTAL = 37
+ * Lines bytes offsets follow as ID=1 SPACE=10 NAME=15 SPACE=10 ACTION=5 EOL=1 TOTAL = 42
  * Thread safe
  * @param option (Action/Name) if option Action selected, it also updates the philosopher's action
  */
@@ -497,7 +497,7 @@ void * cogitate(void * param){
  * Populate the database
  * Each philosopher thinks five times
  * Each philosopher eats five times
- * Total of 50 lines + HEADER = (1888 bytes)
+ * Total of 50 lines + HEADER = (42 * 51 = 2142 bytes)
  */
 void create_db(){
     pthread_t thread_id[N];
@@ -549,7 +549,7 @@ void menu(){
             menu();
             break;
         case QUIT:
-            printf("%s",read_file(filename));
+            print(buffer);
             exit(0);
 //        case TEST:
 //            test();
