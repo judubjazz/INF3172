@@ -8,7 +8,7 @@
 #define P4                      "Aristotle      "
 #define SPACE                   "          "
 #define HEADER                  "Code          Nom                  Action\n"
-#define MENU                    "\n\n1)Consulter résultat\n2)Modifier le nom d'un philosphe\n3)Supprimer le nom d'un philosophe\n4)Modifier l'action et le nom d'un philosophe\n5)Quitter\n"
+#define MENU                    "\n\n1)Consulter résultat\n2)Modifier le nom d'un philosophe\n3)Supprimer le nom d'un philosophe\n4)Modifier l'action et le nom d'un philosophe\n5)Quitter\n"
 #define MAN                     "\nChoisissez un numéro entre 1 et 5.\n"
 #define EAT                     "mange"
 #define THINK                   "pense"
@@ -497,7 +497,7 @@ void * cogitate(void * param){
  * Populate the database
  * Each philosopher thinks five times
  * Each philosopher eats five times
- * Total of 50 lines + HEADER = (37 * 51 = 1887 bytes)
+ * Total of 50 lines + HEADER = (42 * 51 = 2142 bytes)
  */
 void create_db(){
     pthread_t thread_id[N];
@@ -549,7 +549,7 @@ void menu(){
             menu();
             break;
         case QUIT:
-            printf("%s",read_file(filename));
+            print(buffer);
             exit(0);
         case TEST:
             test();
