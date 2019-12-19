@@ -246,8 +246,10 @@ void delete(){
 
     // lock the entire file
     if(!activate_lock(fd,SIZE_FILE)){
-        fprintf(stderr,ERR_LOCK_S_DELETE,filename);
-        usleep(250);
+        char e[64];
+        sprintf(e,ERR_LOCK_S_DELETE,filename);
+        handle_error(e);
+        usleep(SLEEP_TIME);
         menu();
     }
     // ask the user for a philosopher to delete
@@ -364,7 +366,9 @@ void update(int option){
                 if(!activate_lock(fd,SIZE_NAME)){
                     read(fd,name,SIZE_NAME);
                     strtok(name," ");
-                    fprintf(stderr,ERR_LOCK_S_NAME,name);
+                    char e[64];
+                    sprintf(e,ERR_LOCK_S_NAME,name);
+                    handle_error(e);
                     menu();
                 }
                 break;
