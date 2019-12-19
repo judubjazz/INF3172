@@ -32,7 +32,7 @@
 #define NAME          0
 #define ACTION        1
 #define MAX_THREADS   5
-#define SLEEP_TIME    0
+#define SLEEP_TIME    300
 #define SIZE_LINE     42
 #define SIZE_FILE     2142
 #define SIZE_NAME     15
@@ -486,9 +486,9 @@ void * cogitate(void * param){
     int * id = param;
     for (int i = 0; i<5;++i){
         pickup_forks(*id);
-        sleep(SLEEP_TIME);
+        usleep(SLEEP_TIME);
         return_forks(*id);
-        sleep(SLEEP_TIME);
+        usleep(SLEEP_TIME);
     }
     pthread_exit(0);
 }
