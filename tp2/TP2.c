@@ -248,7 +248,6 @@ void delete(){
         char e[64];
         sprintf(e,ERR_LOCK_S_DELETE,filename);
         handle_error(e);
-        usleep(SLEEP_TIME);
         menu();
     }
     // ask the user for a philosopher to delete
@@ -264,10 +263,8 @@ void delete(){
         // db size has changed
         SIZE_FILE -= (10*SIZE_LINE);
         state[id]=0;
-//        printi("SIZE OF FILE AFTER DELETE", SIZE_FILE);
         close(fd2);
     }
-//    printi("SIZE OF FILE", SIZE_FILE);
     // reset
     release_lock(fd, SIZE_FILE);
     close(fd);
@@ -410,10 +407,8 @@ void update(int option){
         remove(filename);
         rename(TMP_FOLDER,filename);
         close(fd2);
-//        printi("FILE SIZE AFTER UPDATE ", SIZE_FILE);
     }
 
-//    printi("FILE SIZE ", SIZE_FILE);
 
     // reset fd1
     lseek(fd ,0,SEEK_SET);
