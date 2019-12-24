@@ -44,7 +44,11 @@ void handle_error(char * msg){
 }
 
 void print(char * msg){
-    printf("%s\n",msg);
+    printf(BOLDWHITE "%s\n" RESET,msg);
+}
+
+void printi(char * msg, int i){
+    printf("%s%i\n", msg,i);
 }
 /**
  * read a file
@@ -73,7 +77,6 @@ char *read_file(const char *filename) {
         // fread doesn't set it so put a \0 in the last position
         // and buffer is now officially a string
         buffer[string_size] = '\0';
-//        buffer[1887] = '\0';
 
         if (string_size != read_size) {
             // Something went wrong, throw away the memory and set

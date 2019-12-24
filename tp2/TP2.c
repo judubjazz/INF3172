@@ -34,9 +34,7 @@
 #define MAX_THREADS   5
 #define SLEEP_TIME    300
 #define SIZE_LINE     42
-#define SIZE_FILE     2142
 #define SIZE_NAME     15
-#define SIZE_ACTION   6
 #define SIZE_SPACE    10
 #define N             5
 #define THINKING      2
@@ -58,8 +56,10 @@ pthread_mutex_t mutex;
 pthread_cond_t Signal[N];
 char const* filename;
 char buffer[MAX_SIZE*5];
+int SIZE_FILE = 2142;
 int state[N];
 int phil[N] = { 0, 1, 2, 3, 4 };
+
 
 
 /**
@@ -121,7 +121,6 @@ char *get_action(char c) {
  * @param o
  */
 void scan_option(long *o){
-    printf(MENU);
     char option[64];
     char * endptr;
     fgets(option, 64, stdin);
@@ -186,7 +185,7 @@ bool scan_id(long * id){
 /**
  * Appends an array with corresponding rows number matching a philosopherID
  * @param id
- * @param philosophers_lines
+ * @param philosophers_lines array to be append
  */
 void get_philosophers_lines(int id, int *philosophers_lines){
     FILE* fileptr;
@@ -211,10 +210,10 @@ void get_philosophers_lines(int id, int *philosophers_lines){
  * @param philosopher_id
  */
 void delete_philosopher(int fd, int fd2, int philosopher_id){
-    char buf[SIZE_FILE+1];
+    char buf[SIZE_FILE];
     char s[64];
     char * line;
-    buf[SIZE_FILE] = '\0';
+    buf[SIZE_FILE-1] = '\0';
 
     read(fd,buf,SIZE_FILE);
 
@@ -231,6 +230,9 @@ void delete_philosopher(int fd, int fd2, int philosopher_id){
         // next line
         line = strtok(NULL,"\n");
     }
+
+    // db size has changed
+    SIZE_FILE -= (10*SIZE_LINE);
 
     remove(filename);
     rename(TMP_FOLDER, filename);
@@ -273,8 +275,8 @@ void delete(){
  * @param fd
  * @param fd2
  * @param philosopher_id
- * @param name
- * @param action if not Null, also updates the philosopher's action
+ * @param name   new philosopher name
+ * @param action if not null, updates the philosopher's action
  */
 void update_philosopher(int fd, int fd2, int philosopher_id, char *name, char *action){
     char * line;
@@ -286,7 +288,6 @@ void update_philosopher(int fd, int fd2, int philosopher_id, char *name, char *a
     lseek(fd,0,SEEK_SET);
     read(fd,buf,SIZE_FILE);
 
-
     // scan each lines
     line = strtok(buf,"\n");
     while(line != NULL){
@@ -294,12 +295,12 @@ void update_philosopher(int fd, int fd2, int philosopher_id, char *name, char *a
             // headers
             write(fd2,HEADER,SIZE_LINE);
         } else if (line[0] != philosopher_id+'0') {
-            // lines whom are not matching the philosopherID
+            // lines not matching the philosopherID
             sprintf(s,"%s\n",line);
             write(fd2,s,SIZE_LINE);
         } else {
             if(action == NULL) {
-                // need to scan the action
+                // need to scan current action
                 action = get_action(line[31]);
                 sprintf(s, "%c%s%s%s%s\n", line[0], SPACE, name, SPACE, action);
                 action = NULL;
@@ -533,11 +534,12 @@ void create_db(){
  * 5)Quit
  */
 void menu(){
+    printf(MENU);
     long o;
     scan_option(&o);
     switch(o){
         case SELECT:
-            printf("%s",read_file(filename));
+            print(read_file(filename));
             menu();
             break;
         case DELETE:
@@ -553,13 +555,13 @@ void menu(){
             menu();
             break;
         case QUIT:
-            print(buffer);
+            print(read_file(filename));
             exit(0);
 //        case TEST:
 //            test();
 //            menu();
         default:
-            printf("%s\n", MAN);
+            print(MAN);
             menu();
     }
 }

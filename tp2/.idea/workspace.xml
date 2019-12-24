@@ -13,9 +13,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="db2c9712-0366-4159-8601-42757e4d7f41" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TP2" beforeDir="false" afterPath="$PROJECT_DIR$/TP2" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TP2.c" beforeDir="false" afterPath="$PROJECT_DIR$/TP2.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/validator.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/valider" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/resultat.txt" beforeDir="false" afterPath="$PROJECT_DIR$/resultat.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils.c" beforeDir="false" afterPath="$PROJECT_DIR$/utils.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/valider" beforeDir="false" afterPath="$PROJECT_DIR$/valider" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -47,10 +50,23 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/TP2.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="142">
-              <caret line="369" column="40" selection-start-line="369" selection-start-column="30" selection-end-line="369" selection-end-column="40" />
+            <state relative-caret-position="255">
+              <caret line="536" column="17" selection-start-line="536" selection-start-column="17" selection-end-line="536" selection-end-column="17" />
               <folding>
                 <element signature="e#0#20#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/utils.c">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="369">
+              <caret line="49" lean-forward="true" selection-start-line="49" selection-end-line="49" />
+              <folding>
+                <element signature="e#0#17#0" expanded="true" />
+                <marker date="1577165185205" expanded="true" signature="4128:4197" ph="..." />
               </folding>
             </state>
           </provider>
@@ -60,7 +76,7 @@
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
             <state split_layout="SPLIT">
-              <first_editor relative-caret-position="151">
+              <first_editor relative-caret-position="600">
                 <caret line="40" column="39" selection-start-line="40" selection-start-column="39" selection-end-line="40" selection-end-column="39" />
               </first_editor>
               <second_editor />
@@ -85,7 +101,6 @@
       <find>fgets</find>
       <find>activate</find>
       <find>id</find>
-      <find>delete</find>
       <find>handle_error</find>
       <find>set_position</find>
       <find>update</find>
@@ -96,6 +111,9 @@
       <find>TEST</find>
       <find>sleep</find>
       <find>ERR_LOCK_S</find>
+      <find>sprintf</find>
+      <find>usleep</find>
+      <find>delete</find>
     </findStrings>
     <replaceStrings>
       <replace />
@@ -115,9 +133,9 @@
         <option value="$PROJECT_DIR$/phtread_cond.c" />
         <option value="$PROJECT_DIR$/test.c" />
         <option value="$PROJECT_DIR$/Makefile" />
-        <option value="$PROJECT_DIR$/utils.c" />
         <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/validator.c" />
+        <option value="$PROJECT_DIR$/utils.c" />
         <option value="$PROJECT_DIR$/TP2.c" />
       </list>
     </option>
@@ -222,28 +240,30 @@
       <workItem from="1576668539992" duration="5446000" />
       <workItem from="1576674008983" duration="8855000" />
       <workItem from="1576697077815" duration="1063000" />
-      <workItem from="1576712632656" duration="1796000" />
+      <workItem from="1576712632656" duration="2351000" />
+      <workItem from="1577162041488" duration="3275000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="198146000" />
+    <option name="totallyTimeSpent" value="201976000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-3" y="0" width="1606" height="870" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.20154044" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.20410784" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32978722" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.2912234" />
+      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.14494681" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.375" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Database Changes" order="7" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="8" sideWeight="0.4987163" visible="true" weight="0.32446808" />
+      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.4987163" weight="0.32446808" />
       <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5012837" side_tool="true" weight="0.30319148" />
       <window_info anchor="bottom" id="Version Control" order="10" />
       <window_info anchor="bottom" id="CMake" order="11" weight="0.32978722" />
@@ -252,7 +272,7 @@
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="right" id="Database" order="3" weight="0.32991013" />
-      <window_info anchor="right" id="make" order="4" />
+      <window_info anchor="right" id="make" order="4" weight="0.32991013" />
     </layout>
     <layout-to-restore>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2991014" />
@@ -438,17 +458,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/utils.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="109">
-          <caret line="34" column="28" selection-start-line="34" selection-start-column="28" selection-end-line="34" selection-end-column="28" />
-          <folding>
-            <element signature="e#0#17#0" expanded="true" />
-            <marker date="1576678108044" expanded="true" signature="4050:4119" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/resultat.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="466">
@@ -456,20 +465,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/validator.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="189">
-          <caret line="564" column="23" lean-forward="true" selection-start-line="564" selection-start-column="23" selection-end-line="564" selection-end-column="23" />
-          <folding>
-            <element signature="e#0#20#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/validator.c" />
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
-          <first_editor relative-caret-position="151">
+          <first_editor relative-caret-position="600">
             <caret line="40" column="39" selection-start-line="40" selection-start-column="39" selection-end-line="40" selection-end-column="39" />
           </first_editor>
           <second_editor />
@@ -483,10 +483,21 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/utils.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="369">
+          <caret line="49" lean-forward="true" selection-start-line="49" selection-end-line="49" />
+          <folding>
+            <element signature="e#0#17#0" expanded="true" />
+            <marker date="1577165185205" expanded="true" signature="4128:4197" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/TP2.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="142">
-          <caret line="369" column="40" selection-start-line="369" selection-start-column="30" selection-end-line="369" selection-end-column="40" />
+        <state relative-caret-position="255">
+          <caret line="536" column="17" selection-start-line="536" selection-start-column="17" selection-end-line="536" selection-end-column="17" />
           <folding>
             <element signature="e#0#20#0" expanded="true" />
           </folding>
