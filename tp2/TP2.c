@@ -210,10 +210,10 @@ void get_philosophers_lines(int id, int *philosophers_lines){
  * @param philosopher_id
  */
 void delete_philosopher(int fd, int fd2, int philosopher_id){
-    char buf[SIZE_FILE];
+    char buf[SIZE_FILE+1];
     char s[64];
     char * line;
-    buf[SIZE_FILE-1] = '\0';
+    buf[SIZE_FILE] = '\0';
 
     read(fd,buf,SIZE_FILE);
 
@@ -230,9 +230,6 @@ void delete_philosopher(int fd, int fd2, int philosopher_id){
         // next line
         line = strtok(NULL,"\n");
     }
-
-    // db size has changed
-    SIZE_FILE -= (10*SIZE_LINE);
 
     remove(filename);
     rename(TMP_FOLDER, filename);
@@ -259,13 +256,20 @@ void delete(){
         handle_error(ERR_SCAN_PHILOSOPHER_ID);
     }
 
-    // open a temporary file to paste in
-    int fd2 = open(TMP_FOLDER, O_RDWR|O_CREAT|O_APPEND,0644);
-    delete_philosopher(fd,fd2,id);
-
+    // philosopher appears in db
+    if(state[id]){
+        // open a temporary file to paste in
+        int fd2 = open(TMP_FOLDER, O_RDWR|O_CREAT|O_APPEND,0644);
+        delete_philosopher(fd,fd2,id);
+        // db size has changed
+        SIZE_FILE -= (10*SIZE_LINE);
+        state[id]=0;
+//        printi("SIZE OF FILE AFTER DELETE", SIZE_FILE);
+        close(fd2);
+    }
+//    printi("SIZE OF FILE", SIZE_FILE);
     // reset
     release_lock(fd, SIZE_FILE);
-    close(fd2);
     close(fd);
 }
 
@@ -281,8 +285,8 @@ void delete(){
 void update_philosopher(int fd, int fd2, int philosopher_id, char *name, char *action){
     char * line;
     char s[SIZE_LINE];
-    char buf[SIZE_FILE];
-    buf[SIZE_FILE-1] = '\0';
+    char buf[SIZE_FILE+1];
+    buf[SIZE_FILE] = '\0';
 
     // rewind to read entire file
     lseek(fd,0,SEEK_SET);
@@ -325,7 +329,6 @@ void update(int option){
     char name[64];
     char action [16];
     long id;
-    int  fd;
     int  philosophers_lines[10];
 
 
@@ -338,7 +341,7 @@ void update(int option){
     get_philosophers_lines(id, philosophers_lines);
 
     // lock fields
-    fd = open(filename, O_RDWR|O_CREAT|O_APPEND,0644);
+    int fd = open(filename, O_RDWR|O_CREAT|O_APPEND,0644);
     for(int i = 0; i < 10; ++i){
         // calculate offset that match a philosopherID line
         int philosopher_line = philosophers_lines[i];
@@ -391,24 +394,31 @@ void update(int option){
         }
     }
 
-    // create a temporary folder to paste in
-    int fd2 = open(TMP_FOLDER, O_RDWR|O_CREAT|O_APPEND,0644);
+    // philosopher appears in db
+    if (state[id]) {
+        // create a temporary folder to paste in
+        int fd2 = open(TMP_FOLDER, O_RDWR | O_CREAT | O_APPEND, 0644);
 
+        // run selected update function
+        if(option == ACTION){
+            update_philosopher(fd,fd2,id,name,action);
+        } else {
+            update_philosopher(fd,fd2,id,name,NULL);
+        }
 
-    // run selected update function
-    if(option == ACTION){
-        update_philosopher(fd,fd2,id,name,action);
-    } else {
-        update_philosopher(fd,fd2,id,name,NULL);
+        // reset fd2
+        remove(filename);
+        rename(TMP_FOLDER,filename);
+        close(fd2);
+//        printi("FILE SIZE AFTER UPDATE ", SIZE_FILE);
     }
 
-    // reset
-    remove(filename);
-    rename(TMP_FOLDER,filename);
+//    printi("FILE SIZE ", SIZE_FILE);
+
+    // reset fd1
     lseek(fd ,0,SEEK_SET);
     release_lock(fd ,SIZE_FILE);
     close(fd);
-    close(fd2);
 }
 
 
@@ -523,6 +533,10 @@ void create_db(){
     //write the buffer on file
     buffer[SIZE_FILE] = '\0';
     write_file(filename,buffer);
+
+    // each philospher appears in the db
+    for(int i=0;i<N;++i)
+        state[i]=1;
 }
 
 /**

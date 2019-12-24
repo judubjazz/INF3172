@@ -13,7 +13,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="db2c9712-0366-4159-8601-42757e4d7f41" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TP2" beforeDir="false" afterPath="$PROJECT_DIR$/TP2" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TP2.c" beforeDir="false" afterPath="$PROJECT_DIR$/TP2.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resultat.txt" beforeDir="false" afterPath="$PROJECT_DIR$/resultat.txt" afterDir="false" />
@@ -50,8 +49,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/TP2.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="255">
-              <caret line="536" column="17" selection-start-line="536" selection-start-column="17" selection-end-line="536" selection-end-column="17" />
+            <state relative-caret-position="520">
+              <caret line="234" column="33" selection-start-line="234" selection-start-column="33" selection-end-line="234" selection-end-column="33" />
               <folding>
                 <element signature="e#0#20#0" expanded="true" />
               </folding>
@@ -62,11 +61,11 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/utils.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="369">
-              <caret line="49" lean-forward="true" selection-start-line="49" selection-end-line="49" />
+            <state relative-caret-position="324">
+              <caret line="75" column="48" selection-start-line="75" selection-start-column="48" selection-end-line="75" selection-end-column="48" />
               <folding>
                 <element signature="e#0#17#0" expanded="true" />
-                <marker date="1577165185205" expanded="true" signature="4128:4197" ph="..." />
+                <marker date="1577167862685" expanded="true" signature="4147:4216" ph="..." />
               </folding>
             </state>
           </provider>
@@ -241,12 +240,12 @@
       <workItem from="1576674008983" duration="8855000" />
       <workItem from="1576697077815" duration="1063000" />
       <workItem from="1576712632656" duration="2351000" />
-      <workItem from="1577162041488" duration="3275000" />
+      <workItem from="1577162041488" duration="5818000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="201976000" />
+    <option name="totallyTimeSpent" value="204519000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-3" y="0" width="1606" height="870" extended-state="6" />
@@ -485,19 +484,19 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/utils.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="369">
-          <caret line="49" lean-forward="true" selection-start-line="49" selection-end-line="49" />
+        <state relative-caret-position="324">
+          <caret line="75" column="48" selection-start-line="75" selection-start-column="48" selection-end-line="75" selection-end-column="48" />
           <folding>
             <element signature="e#0#17#0" expanded="true" />
-            <marker date="1577165185205" expanded="true" signature="4128:4197" ph="..." />
+            <marker date="1577167862685" expanded="true" signature="4147:4216" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/TP2.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="536" column="17" selection-start-line="536" selection-start-column="17" selection-end-line="536" selection-end-column="17" />
+        <state relative-caret-position="520">
+          <caret line="234" column="33" selection-start-line="234" selection-start-column="33" selection-end-line="234" selection-end-column="33" />
           <folding>
             <element signature="e#0#20#0" expanded="true" />
           </folding>

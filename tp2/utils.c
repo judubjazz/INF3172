@@ -73,7 +73,7 @@ char *read_file(const char *filename) {
 
         // Read it all in one operation
         read_size = fread(buffer, sizeof(char), string_size, handler);
-
+//        printi("SIZE OF FILE IS ", string_size);
         // fread doesn't set it so put a \0 in the last position
         // and buffer is now officially a string
         buffer[string_size] = '\0';
